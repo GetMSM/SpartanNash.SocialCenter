@@ -36,8 +36,9 @@ function load_required_files(){
 			$timestamp = false;
 
 			if (isset($_POST['schedule_post']) && $_POST['schedule_post'] != '' && $_POST['schedule_date'] != '') {
-				$schedule_date = $_POST['schedule_date'];
-				$timestamp = strtotime($schedule_date);
+				date_default_timezone_set("America/New_York"); //Added by Ian 190503Fr1125. This will need to be removed, see below. 
+				$schedule_date = $_POST['schedule_date']; // This will need to be changed, see below.
+				$timestamp = strtotime($schedule_date);  // This will need to be removed when we make this conversion client-side in the future.
 			}
 			
 			//This is page id or post id
