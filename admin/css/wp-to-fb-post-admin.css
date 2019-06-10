@@ -1,0 +1,8 @@
+/**
+ * All of the CSS for your admin-specific functionality should be
+ * included in this file.
+ */
+ .wptfbp_sample_link input {
+    width: 70%;
+    padding: 8px;
+}
