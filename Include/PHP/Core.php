@@ -116,6 +116,9 @@ class SpartanNash_SocialCenter {
 		*/
 		require_once plugin_dir_path( __FILE__ ) . 'Public.php';
 
+		// The following file is what actually runs the posting to the Facebook Graph API.
+		require plugin_dir_path( __FILE__ ) . 'Facebook.Share.php';
+
 		$this->loader = new SpartanNash_SocialCenter_Loader();
 	}
 
@@ -158,14 +161,30 @@ class SpartanNash_SocialCenter {
 	private function define_public_hooks() {
 		
 		$plugin_public = new SpartanNash_SocialCenter_Public( $this->get_plugin_name(), $this->get_version() );
+		$Class_FacebookShare = new SpartanNash_SocialCenter_FacebookShare();
 
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_styles' );
+
 		$this->loader->add_action( 'wp_enqueue_scripts', $plugin_public, 'enqueue_scripts' );
-		$this->loader->add_filter('single_template',$plugin_public, 'wpfbpost_single_post');
-		
-		$this->loader->add_filter( 'the_content',$plugin_public,'add_btn_compose_post');
-		$this->loader->add_filter( 'the_excerpt_more',$plugin_public, 'add_btn_compose_post_excerpt_more' );
-		$this->loader->add_action( 'init',$plugin_public, 'wpfbpost_fb_to_page' );
+
+		// The following filter transforms the post content into the customization form.
+		// This happens when viewing the post with the proper 'Get' variables set.
+		$this->loader->add_filter('single_template',$plugin_public, 'Filter_PostCompose');
+
+		// The following filter transforms the post content when viewing the post before customizing.
+		// It adds the customization button to the post content, and also shows the account page when requested.
+		$this->loader->add_filter( 'the_content',$plugin_public,'Filter_PostSelect');
+
+		// The following line likely does not work, as there is no "the_excerpt_more" hook listed in the WP Codex.
+		// It appears to be an attempt to put the customization button on a page where post excerpt are shown, but I cant find that page.
+		// Just confirmed with Josh there is no blog-style view of the posts, so disabling this for now.
+		//$this->loader->add_filter( 'the_excerpt_more',$plugin_public, 'add_btn_compose_post_excerpt_more' );
+
+		// This is where the authorization and page picking logic lives.
+		$this->loader->add_action( 'init',$plugin_public, 'Action_FacebookAuthorize' );
+
+		// This is where the logic that actually shares to facebook lives.
+		$this->loader->add_action( 'init' , $Class_FacebookShare , 'Action_FacebookShare' );
 	}
 
 	/**

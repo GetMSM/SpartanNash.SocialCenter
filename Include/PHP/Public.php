@@ -66,9 +66,9 @@ class SpartanNash_SocialCenter_Public {
 
 		wp_enqueue_style( $this->plugin_name, plugin_dir_url( __FILE__ ) . '../CSS/wp-to-fb-post-public.css', array(), $this->version, 'all' );
 
-		wp_enqueue_style( 'jquery-ui', plugin_dir_url( __FILE__ ) . '../CSS/jquery-ui.css', array(), $this->version, 'all' );
+		wp_enqueue_style( 'jquery-ui', plugin_dir_url( __FILE__ ) . '../../Lib/JQuery/jquery-ui.css', array(), $this->version, 'all' );
 
-		wp_enqueue_style( 'ui-date-picker', plugin_dir_url( __FILE__ ) . '../CSS/jquery-ui-timepicker-addon.css', array(), $this->version, 'all' );
+		wp_enqueue_style( 'ui-date-picker', plugin_dir_url( __FILE__ ) . '../../Lib/JQuery/jquery-ui-timepicker-addon.css', array(), $this->version, 'all' );
 
 	}
 
@@ -93,16 +93,16 @@ class SpartanNash_SocialCenter_Public {
 		
 		wp_enqueue_script( $this->plugin_name, plugin_dir_url( __FILE__ ) . '../JS/wp-to-fb-post-public.js', array( 'jquery' ), $this->version, false );
 		
-		wp_enqueue_script( 'jquery-ui', plugin_dir_url( __FILE__ ) . '../JS/jquery-ui.min.js', array( 'jquery' ), $this->version, false );
-		wp_enqueue_script( 'ui-date-picker', plugin_dir_url( __FILE__ ) . '../JS/jquery-ui-timepicker-addon.js', array( 'jquery' ), $this->version, false );
-		wp_enqueue_script( 'ui-date-picker-addon', plugin_dir_url( __FILE__ ) . '../JS/jquery-ui-timepicker-addon-i18n.min.js', array( 'jquery' ), $this->version, false );
-		wp_enqueue_script( 'ui-sliderAccess', plugin_dir_url( __FILE__ ) . '../JS/jquery-ui-sliderAccess.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( 'jquery-ui', plugin_dir_url( __FILE__ ) . '../../Lib/JQuery/jquery-ui.min.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( 'ui-date-picker', plugin_dir_url( __FILE__ ) . '../../Lib/JQuery/jquery-ui-timepicker-addon.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( 'ui-date-picker-addon', plugin_dir_url( __FILE__ ) . '../../Lib/JQuery/jquery-ui-timepicker-addon-i18n.min.js', array( 'jquery' ), $this->version, false );
+		wp_enqueue_script( 'ui-sliderAccess', plugin_dir_url( __FILE__ ) . '../../Lib/JQuery/jquery-ui-sliderAccess.js', array( 'jquery' ), $this->version, false );
 		wp_dequeue_script( 'wp_calendar_datepicker' );
 		wp_dequeue_script( 'ihc-jquery-ui' );
 		wp_deregister_script( 'jquery-ui-datepicker' );
 	}
 	
-	public function add_btn_compose_post($content){
+	public function Filter_PostSelect($content){
 		global $post;
 		
 		$btn_visibility = get_field('facebook_post_button_visibility', $post->ID);
@@ -147,25 +147,33 @@ class SpartanNash_SocialCenter_Public {
 					$pages = get_user_meta($current_user->ID, "sc_fb_pages", true );
 					if(!empty($pages))
 					{
-						$user_choose_fb_page = get_user_meta($current_user->ID, "user_choose_fb_page", true );
+						//$user_choose_fb_page = get_user_meta($current_user->ID, "user_choose_fb_page", true );
+						$PagesSelected = get_user_meta ( $current_user -> ID , "user_choose_fb_page" , true );
+						$PagesSelected = explode ( ',' , $PagesSelected );
+						for ( $i = 0; isset($PagesSelected[$i]); $i++ )
+						{
+							$PagesSelected[$PagesSelected[$i]] = true;
+						}
+
 						$pages = json_decode($pages);
 						$content .= '<form action="" method="post" name="user_fb_page" class="fb_page_list">';
-						$content .= '<select name="user_choose_fb_page">';
-						$content .= '<option value="">'. __('Select Page','wp-to-fb-post') .'</option>';
+						//$content .= '<select name="user_choose_fb_page">';
+						//$content .= '<option value="">'. __('Select Page','wp-to-fb-post') .'</option>';
+						$content .= '<legend>Select Pages:</legend>';
 						foreach ($pages as $key => $value) {
-							if($key == $user_choose_fb_page)
+							if( isset($PagesSelected[$key]) )
 							{
-								$selected = 'selected';
+								$checked = 'checked="checked"';
 							}
 							else
 							{
-								$selected = '';
+								$checked = '';
 							}
-							$content .= '<option value="'.$key.'" '. $selected .'>'.$value->name.'</option>';
+							$content .= '<input type="checkbox" name="'.$key.'" value="1" '. $checked .' /><label style="display: inline-block;margin: 15px;">'.$value->name.'</label><br />';
 							// $content .= '<input type="radio" value="'.$key.'" name="user_choose_fb_page" '.$checked.' />'.$value->name;
 						}
-						$content .= '</select>';
-						$content .= '<input type="hidden" name="fb_choose_page_post" value"yes" ><input type="submit" name="save_fb_page" value="Save"></form>';
+						//$content .= '</select>';
+						$content .= '<input type="hidden" name="fb_choose_page_post" value="yes" ><input type="submit" name="save_fb_page" value="Save"></form>';
 					}
 				}
 			}
@@ -173,7 +181,8 @@ class SpartanNash_SocialCenter_Public {
 		return $content;
 	}
 
-	public function add_btn_compose_post_excerpt_more( $more ) {
+	// The following function has been disabled. See "Core.php".
+	/*public function add_btn_compose_post_excerpt_more( $more ) {
 		global $post;
 		$btn_visibility = get_field('facebook_post_button_visibility', $post->ID);
 
@@ -189,11 +198,11 @@ class SpartanNash_SocialCenter_Public {
 		}
 		}
 		return $more;
-	}
+	}*/
 	
 	/* Filter the single_template with our custom function*/
 
-	public function wpfbpost_single_post($single) {
+	public function Filter_PostCompose($single) {
 
 	    global $wp_query, $post;
 
@@ -209,7 +218,7 @@ class SpartanNash_SocialCenter_Public {
 	}
 
 	/*post to facebook page */
-	public function wpfbpost_fb_to_page(){
+	public function Action_FacebookAuthorize(){
 		ini_set('display_errors', 1);
 		if(!session_id()) {
 		    session_start();
@@ -220,10 +229,27 @@ class SpartanNash_SocialCenter_Public {
 
 		if(isset($_POST['fb_choose_page_post']))
 		{
-			if(isset($_POST['user_choose_fb_page']) && $_POST['user_choose_fb_page'] != '')
+
+			$pages = get_user_meta ( $current_user -> ID , "sc_fb_pages" , true );
+			$pages = json_decode ( $pages );
+			$PagesSelected = '';
+			foreach ( $pages as $key => $value )
+			{
+				if ( $_POST[$key] == '1')
+				{
+					echo $key . ': Selected.<br />';
+					$PagesSelected .= $key . ',';
+					// Stuff to do if the page was checked.
+				}
+			}
+			update_user_meta( $current_user -> ID , 'user_choose_fb_page' , $PagesSelected );
+
+
+			// This whole chunk is probably going away shortly.
+			/*if(isset($_POST['user_choose_fb_page']) && $_POST['user_choose_fb_page'] != '')
 			{
 				update_user_meta($current_user->ID, "user_choose_fb_page", $_POST['user_choose_fb_page'] );
-			}
+			}*/
 		}
 
 		if(isset($_GET['continuewithfb']) && $_GET['continuewithfb'] == 'yes'){
@@ -241,7 +267,10 @@ class SpartanNash_SocialCenter_Public {
 			}
 		
 			try {
-		  		$accessToken = $helper->getAccessToken('https://socialcenter.spartannash.com/account/?ihc_ap_menu=profile&continuewithfb=yes');
+				// The following line has been added to allow local testing. To put everything back to normal, swap it with the one below it.
+				$accessToken = $helper->getAccessToken('https://d4d9f97c.ngrok.io/account/?ihc_ap_menu=profile&continuewithfb=yes');
+				//$accessToken = $helper->getAccessToken('https://socialcenter.spartannash.com/account/?ihc_ap_menu=profile&continuewithfb=yes');
+				  
 			} catch(Facebook\Exceptions\FacebookResponseException $e) {
 		  		// When Graph returns an error
 		  		echo 'Graph returned an error: ' . $e->getMessage();

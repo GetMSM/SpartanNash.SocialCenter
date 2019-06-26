@@ -51,7 +51,7 @@ register_deactivation_hook( __FILE__, 'SpartanNash_SocialCenter_Deactivate' );
  * admin-specific hooks, and public-facing site hooks.
  */
 require plugin_dir_path( __FILE__ ).'Include/PHP/Core.php';
-require plugin_dir_path( __FILE__ ).'Include/PHP/Facebook.Post.php';
+
 define( 'FACEBOOK_SDK_V4_SRC_DIR', plugin_dir_path( __FILE__ ).'Lib/Facebook.SDK/PHP/');
 require_once(FACEBOOK_SDK_V4_SRC_DIR.'autoload.php');
 
