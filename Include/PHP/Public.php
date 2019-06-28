@@ -1,6 +1,6 @@
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+//error_reporting(E_ALL);
+//ini_set('display_errors', 1);
 /**
  * The public-facing functionality of the plugin.
  *
@@ -268,7 +268,7 @@ class SpartanNash_SocialCenter_Public {
 		
 			try {
 				// The following line has been added to allow local testing. To put everything back to normal, swap it with the one below it.
-				$accessToken = $helper->getAccessToken('https://d4d9f97c.ngrok.io/account/?ihc_ap_menu=profile&continuewithfb=yes');
+				$accessToken = $helper->getAccessToken('https://socialcenterdev.flywheelsites.com/account/?ihc_ap_menu=profile&continuewithfb=yes');
 				//$accessToken = $helper->getAccessToken('https://socialcenter.spartannash.com/account/?ihc_ap_menu=profile&continuewithfb=yes');
 				  
 			} catch(Facebook\Exceptions\FacebookResponseException $e) {

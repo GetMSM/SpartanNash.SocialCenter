@@ -3,8 +3,8 @@
  * single post template
  *
 */
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+//error_reporting(E_ALL);
+//ini_set('display_errors', 1);
 get_header();
 $text_domain = 'wp-to-fb-post';
 $prefix = 'wptfbp_';
