@@ -15,7 +15,7 @@
  * Plugin Name:       Social Center By Spartan Nash
  * Plugin URI:        #
  * Description:       This plugin provides most of the core functionality for Social Center.
- * Version:           2.0.0
+ * Version:           2.0.1
  * Author:            #
  * Author URI:        #
  * License:           GPL-2.0+

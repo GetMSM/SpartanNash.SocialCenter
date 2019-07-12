@@ -140,7 +140,7 @@
     background: #00B437;
 }
 .wptofb-single-post .fusion-image-wrapper{
-    margin:10px
+    /*margin:10px;*/
 }
 .wptofb-single-post .fusion-image-wrapper img{
     width:100%;

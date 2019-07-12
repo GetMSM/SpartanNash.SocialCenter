@@ -21,7 +21,8 @@ if(is_user_logged_in()){
 			$editor_id = 'editpost';
 		?>
 		<form method="POST">
-			<fieldset>
+			<div style="text-align: center;">
+			<fieldset style="text-align: left;">
 				<?php 
 					/*if(isset($_COOKIE["success"])){
 						echo '<div class="alert alert-success">'.$_COOKIE["msg"].'</div>';
@@ -80,11 +81,33 @@ if(is_user_logged_in()){
 				<label for="post_title"><?php _e('Enter Your Url',$text_domain)?>:</label>
 				<input type="url" name="<?php echo $prefix.'url' ?>" placeholder="<?php the_permalink();?>">
 				
+				<?php
+				$FacebookPostVideo = get_field('facebook_post_video', $post->ID);
+					if ( $FacebookPostVideo != '' ) {
+						$FeaturedImage = get_the_post_thumbnail_url($post->ID,'full');
+						$WPVideoShortcodeAttributes['src'] = $FacebookPostVideo;
+						$WPVideoShortcodeAttributes['poster'] = $FeaturedImage;
+						$WPVideoShortcodeAttributes['loop'] = '';
+						$WPVideoShortcodeAttributes['autoplay'] = '';
+						$WPVideoShortcodeAttributes['preload'] = 'metadata';
+						$WPVideoShortcodeAttributes['width'] = 768;
+						$WPVideoShortcodeAttributes['height'] = 432;
+						$WPVideoShortcodeContent;
+						echo('<div style="margin-top:20px;margin-bottom:20px;margin-left:auto;margin-right:auto;">');
+						echo('<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;"><div style="position:absolute;top:0;left:0;width:100%;height:100%;">');
+						echo(wp_video_shortcode( $WPVideoShortcodeAttributes , $WPVideoShortcodeContent ));
+						echo('</div></div></div>');
+					}
+					else {
+						echo('<div class="fusion-image-wrapper" style="margin-top:20px;margin-bottom:20px;text-align:center;">'.get_the_post_thumbnail($post->ID,'medium_large').'</div>');
+					}
+				?>
 
-				<div class="fusion-image-wrapper"><?php the_post_thumbnail('medium_large'); ?></div>
 			</fieldset>
+			</div>
 			<br /><br />
-			<fieldset>
+			<div style="text-align:center;">
+			<fieldset style="text-align: left;">
 			<?php
 			function FacebookPagesSelect () {
 				global $current_user;
@@ -126,12 +149,16 @@ if(is_user_logged_in()){
 			FacebookPagesSelect();
 			?>
 			</fieldset>
+			</div>
 			<br /><br />
+			<div style="text-align:center;">
 			<fieldset>
 			<input type="checkbox" name="schedule_post" value="1" id="schedule_post"> <label style="display: inline-block;margin-bottom: 30px;"><?php _e( 'Schedule this post', 'wp-to-fb-post' );?></label> <input type="text" name="schedule_date" id="datepicker" placeholder="Enter date to be scheduled your post" autocomplete="off" style="display: none;">
 			
 			<input type="hidden" name="the_post_id" value="<?php echo get_the_ID(); ?>" />
 			<input type="submit" class="submite_btn" name="fbtopagepost" value="<?php _e('Post To Facebook',$text_domain)?>" />
+			</fieldset>
+			</div>
 		</form>
 
 		<?php endwhile; ?>

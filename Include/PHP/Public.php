@@ -120,9 +120,26 @@ class SpartanNash_SocialCenter_Public {
 			
 			if(is_user_logged_in()){
 				if ( 'post' == get_post_type( $post ) ) {
+
+					$FacebookPostVideo = get_field('facebook_post_video', $post->ID);
+					if ( $FacebookPostVideo != '' ) {
+						$FeaturedImage = get_the_post_thumbnail_url($post->ID,'full');
+						$WPVideoShortcodeAttributes['src'] = $FacebookPostVideo;
+						$WPVideoShortcodeAttributes['poster'] = $FeaturedImage;
+						$WPVideoShortcodeAttributes['loop'] = '';
+						$WPVideoShortcodeAttributes['autoplay'] = '';
+						$WPVideoShortcodeAttributes['preload'] = 'metadata';
+						$WPVideoShortcodeAttributes['width'] = 768;
+						$WPVideoShortcodeAttributes['height'] = 432;
+						$WPVideoShortcodeContent;
+						$content = '<style type="text/css">.post-content{max-width:768px;margin-left:auto;margin-right:auto;}.wp-video{margin-top:20px;margin-bottom:20px;margin-left:auto;margin-right:auto;}</style>' . wp_video_shortcode( $WPVideoShortcodeAttributes , $WPVideoShortcodeContent ) . $content;
+					}
+					else {
+						$content = '<style type="text/css">.post-content{max-width:768px;margin-left:auto;margin-right:auto;}</style><div class="fusion-image-wrapper" style="margin-top:20px;margin-bottom:20px;text-align:center;">' . get_the_post_thumbnail($post->ID,'medium_large') . '</div>' . $content;
+					}
+
 					$post_edit_type = 'wptofb=wptofb_edit';
 					$text_domain = 'wp-to-fb-post';
-					
 					$wptofbbtn = '<span class="wptofb_btn"><a href="'.get_the_permalink().'?'. $post_edit_type.'">'.__('Customize and Post to Facebook',$text_domain).'</a></span>';
 					$content .= $wptofbbtn;
 			    }
