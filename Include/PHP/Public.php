@@ -108,6 +108,14 @@ class SpartanNash_SocialCenter_Public {
 		$btn_visibility = get_field('facebook_post_button_visibility', $post->ID);
 
 		if($btn_visibility || is_null($btn_visibility)){
+
+			?>
+			<style type="text/css">
+				.video-shortcode p{text-align:center;}
+				.wp-embedded-content{width: 768px; max-width:100%; position: relative !important;}
+			</style>
+			<?php
+
 			if(isset($_GET['wptofb']) && $_GET['wptofb'] == 'wptofb_edit'){
 				?>
 				<style type="text/css" media="screen">
@@ -135,16 +143,16 @@ class SpartanNash_SocialCenter_Public {
 						$content = '<style type="text/css">.post-content{max-width:768px;margin-left:auto;margin-right:auto;}.wp-video{margin-top:20px;margin-bottom:20px;margin-left:auto;margin-right:auto;}</style>' . wp_video_shortcode( $WPVideoShortcodeAttributes , $WPVideoShortcodeContent ) . $content;
 					}
 					else {
-						$content = '<style type="text/css">.post-content{max-width:768px;margin-left:auto;margin-right:auto;}</style><div class="fusion-image-wrapper" style="margin-top:20px;margin-bottom:20px;text-align:center;">' . get_the_post_thumbnail($post->ID,'medium_large') . '</div>' . $content;
+						$content = '<style type="text/css">.post-content{max-width:768px;margin-left:auto;margin-right:auto;}</style><div class="fusion-image-wrapper" style="margin-left:auto;margin-right:auto;margin-top:20px;margin-bottom:20px;text-align:center;">' . get_the_post_thumbnail($post->ID,'medium_large') . '</div>' . $content;
 					}
 
 					$post_edit_type = 'wptofb=wptofb_edit';
 					$text_domain = 'wp-to-fb-post';
-					$wptofbbtn = '<span class="wptofb_btn"><a href="'.get_the_permalink().'?'. $post_edit_type.'">'.__('Customize and Post to Facebook',$text_domain).'</a></span>';
+					$wptofbbtn = '<span class="wptofb_btn"><a href="'.get_the_permalink().'?'. $post_edit_type.'">'.__('CUSTOMIZE',$text_domain).'</a></span>';
 					$content .= $wptofbbtn;
 			    }
 
-			    if(is_page('account') && isset($_GET['ihc_ap_menu']) && $_GET['ihc_ap_menu'] == 'profile')
+			    if(is_page('account') && isset($_GET['ihc_ap_menu']) && $_GET['ihc_ap_menu'] == 'social')
 			    {
 			    	$fb = new Facebook\Facebook([
 					  'app_id' => '524022474717135', // Replace {app-id} with your app id
@@ -155,9 +163,7 @@ class SpartanNash_SocialCenter_Public {
 					$helper = $fb->getRedirectLoginHelper();
 
 					$permissions = ['email','manage_pages','publish_pages','pages_show_list']; // Optional permissions
-					$loginUrl = $helper->getReAuthenticationUrl(site_url('/account/?ihc_ap_menu=profile&continuewithfb=yes'), $permissions);
-
-					$content .= '<a class="facebookbtn" href="' . htmlspecialchars($loginUrl) . '">Continue with Facebook!</a>';
+					$loginUrl = $helper->getReAuthenticationUrl(site_url('/account/?ihc_ap_menu=social&continuewithfb=yes'), $permissions);
 
 					global $current_user;
 
@@ -173,10 +179,10 @@ class SpartanNash_SocialCenter_Public {
 						}
 
 						$pages = json_decode($pages);
-						$content .= '<form action="" method="post" name="user_fb_page" class="fb_page_list">';
+						$content .= '<div style="text-align:center;"><form action="" method="post" name="user_fb_page" class="fb_page_list">';
 						//$content .= '<select name="user_choose_fb_page">';
 						//$content .= '<option value="">'. __('Select Page','wp-to-fb-post') .'</option>';
-						$content .= '<legend>Select Pages:</legend>';
+						$content .= '<legend style="font-weight:bold;margin-top:20px;margin-bottom:20px;">Manage Preset Page Selection:</legend><div style="text-align:center;"><fieldset style="text-align:left;display:inline-block;vertical-align:middle;">';
 						foreach ($pages as $key => $value) {
 							if( isset($PagesSelected[$key]) )
 							{
@@ -190,7 +196,12 @@ class SpartanNash_SocialCenter_Public {
 							// $content .= '<input type="radio" value="'.$key.'" name="user_choose_fb_page" '.$checked.' />'.$value->name;
 						}
 						//$content .= '</select>';
-						$content .= '<input type="hidden" name="fb_choose_page_post" value="yes" ><input type="submit" name="save_fb_page" value="Save"></form>';
+						$content .= '</fieldset><fieldset style="display:inline-block;vertical-align:middle;"><input type="hidden" name="fb_choose_page_post" value="yes" ><input style="border:none;border-radius:0px;margin:20px;" type="submit" name="save_fb_page" value="Save Selection">';
+						$content .= '</fieldset></div></form></div>';
+						$content .= '<div style="text-align:center;font-weight:bold;"><div style="margin-top:20px;margin-bottom:20px;">Manage Authorized Pages:</div><a style="margin:0;color:#FFFFFF;font-weight:bold;border-radius:0px;margin:20px;" class="facebookbtn" href="' . htmlspecialchars($loginUrl) . '">Continue With Facebook</a></div>';
+					}
+					else{
+					$content .= '<div style="text-align:center;font-weight:bold;"><div style="margin-top:20px;margin-bottom:20px;">Add Authorized Pages:</div><a style="margin:0;color:#FFFFFF;font-weight:bold;border-radius:0px;margin:20px;" class="facebookbtn" href="' . htmlspecialchars($loginUrl) . '">Continue With Facebook</a></div>';
 					}
 				}
 			}
@@ -254,7 +265,7 @@ class SpartanNash_SocialCenter_Public {
 			{
 				if ( $_POST[$key] == '1')
 				{
-					echo $key . ': Selected.<br />';
+					//echo $key . ': Selected.<br />';
 					$PagesSelected .= $key . ',';
 					// Stuff to do if the page was checked.
 				}
@@ -284,8 +295,9 @@ class SpartanNash_SocialCenter_Public {
 			}
 		
 			try {
+				$accessToken = $helper->getAccessToken('https://socialcenterdev.flywheelsites.com/account/?ihc_ap_menu=social&continuewithfb=yes');
 				// The following line has been added to allow local testing. To put everything back to normal, swap it with the one below it.
-				$accessToken = $helper->getAccessToken('https://socialcenterdev.flywheelsites.com/account/?ihc_ap_menu=profile&continuewithfb=yes');
+				//$accessToken = $helper->getAccessToken('https://socialcenterdev.flywheelsites.com/account/?ihc_ap_menu=profile&continuewithfb=yes');
 				//$accessToken = $helper->getAccessToken('https://socialcenter.spartannash.com/account/?ihc_ap_menu=profile&continuewithfb=yes');
 				  
 			} catch(Facebook\Exceptions\FacebookResponseException $e) {
@@ -375,9 +387,13 @@ class SpartanNash_SocialCenter_Public {
 					foreach ($data as $value) {
 						$newarray[$value['id']] = $value;
 					}
+					$newarray = json_encode($newarray);
 				}
-				update_user_meta($current_user->ID, "sc_fb_pages", json_encode($newarray) );
-				$url = site_url('/account/?ihc_ap_menu=profile');
+				else if (empty($data)){
+					$newarray = '';
+				}
+				update_user_meta($current_user->ID, "sc_fb_pages", $newarray );
+				$url = site_url('/account/?ihc_ap_menu=social');
 				wp_redirect( $url );
 				exit;
 			}

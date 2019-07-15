@@ -22,7 +22,7 @@ if(is_user_logged_in()){
 		?>
 		<form method="POST">
 			<div style="text-align: center;">
-			<fieldset style="text-align: left;">
+			<div style="text-align: left;">
 				<?php 
 					/*if(isset($_COOKIE["success"])){
 						echo '<div class="alert alert-success">'.$_COOKIE["msg"].'</div>';
@@ -69,17 +69,28 @@ if(is_user_logged_in()){
 					}
 					
 				?>
-				<legend><span class="number"><?php _e('1',$text_domain)?></span><?php _e('Customize Your Post',$text_domain)?></legend>
+				
+				
+				<div class="wptfbp_content" style="max-width:768px;margin-left:auto;margin-right:auto;">
+					
+				<legend><span class="number"><?php _e('Customize',$text_domain)?><?php// _e('1',$text_domain)?></span></legend>
 				<?php /* ?>
 				<label for="post_title"><?php _e('Enter Your Post Title',$text_domain)?>:</label>
 				<input type="text" name="<?php echo $prefix.'title' ?>" placeholder="<?php the_title();?>">
-				<?php */ ?>
-				<label for="post_title"><?php _e('Post Content',$text_domain)?>:</label>
-				
-				<span class="wptfbp_content"><?php wp_editor( $content, $editor_id,$settings );?></span>
+				<?php */ 
 
-				<label for="post_title"><?php _e('Enter Your Url',$text_domain)?>:</label>
-				<input type="url" name="<?php echo $prefix.'url' ?>" placeholder="<?php the_permalink();?>">
+				$content = str_replace(']]>', '&gt;', $content);
+				$content = stripslashes(strip_tags($content));
+				
+				?>
+				<!--<label for="post_title"><?php// _e('Post Content',$text_domain)?>:</label>-->
+				
+				<textarea name="editpost" style="width:100%;max-width: 100%;min-width:100%;height:256px;background-color:#FFFFFF;color:#666666;margin-bottom:0px;"><?php /*wp_editor( $content, $editor_id,$settings );*/ echo($content); ?></textarea>
+
+				</div>
+
+				<label for="post_title" style="display: none;"><?php _e('Enter Your Url',$text_domain)?>:</label>
+				<input type="url" name="<?php echo $prefix.'url' ?>" placeholder="<?php the_permalink();?>" style="display:none;"></div>
 				
 				<?php
 				$FacebookPostVideo = get_field('facebook_post_video', $post->ID);
@@ -93,21 +104,21 @@ if(is_user_logged_in()){
 						$WPVideoShortcodeAttributes['width'] = 768;
 						$WPVideoShortcodeAttributes['height'] = 432;
 						$WPVideoShortcodeContent;
-						echo('<div style="margin-top:20px;margin-bottom:20px;margin-left:auto;margin-right:auto;">');
+						echo('<div style="margin-top:20px;margin-left:auto;margin-right:auto;max-width:768px;">');
 						echo('<div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;"><div style="position:absolute;top:0;left:0;width:100%;height:100%;">');
 						echo(wp_video_shortcode( $WPVideoShortcodeAttributes , $WPVideoShortcodeContent ));
 						echo('</div></div></div>');
 					}
 					else {
-						echo('<div class="fusion-image-wrapper" style="margin-top:20px;margin-bottom:20px;text-align:center;">'.get_the_post_thumbnail($post->ID,'medium_large').'</div>');
+						echo('<div class="fusion-image-wrapper" style="max-width:768px;margin-left:auto;margin-right:auto;margin-top:20px;text-align:center;">'.get_the_post_thumbnail($post->ID,'medium_large').'</div>');
 					}
 				?>
 
-			</fieldset>
+				
 			</div>
-			<br /><br />
 			<div style="text-align:center;">
-			<fieldset style="text-align: left;">
+			<fieldset style="text-align: left; display:inline-block;vertical-align:top;margin-top:20px;">
+			<legend style="text-align:center;"><span class="number">Select Pages</span></legend>
 			<?php
 			function FacebookPagesSelect () {
 				global $current_user;
@@ -128,7 +139,7 @@ if(is_user_logged_in()){
 					//$content .= '<form action="" method="post" name="user_fb_page" class="fb_page_list">';
 					//$content .= '<select name="user_choose_fb_page">';
 					//$content .= '<option value="">'. __('Select Page','wp-to-fb-post') .'</option>';
-					$content .= '<legend>Select Pages:</legend>';
+
 					foreach ($pages as $key => $value) {
 						if( isset($PagesSelected[$key]) )
 						{
@@ -149,14 +160,12 @@ if(is_user_logged_in()){
 			FacebookPagesSelect();
 			?>
 			</fieldset>
-			</div>
-			<br /><br />
-			<div style="text-align:center;">
-			<fieldset>
-			<input type="checkbox" name="schedule_post" value="1" id="schedule_post"> <label style="display: inline-block;margin-bottom: 30px;"><?php _e( 'Schedule this post', 'wp-to-fb-post' );?></label> <input type="text" name="schedule_date" id="datepicker" placeholder="Enter date to be scheduled your post" autocomplete="off" style="display: none;">
+			<fieldset style="display:inline-block;vertical-align:top;margin-top:20px;">
+			<legend style="text-align:center;"><span class="number">Options</span></legend>
+			<input type="checkbox" name="schedule_post" value="1" id="schedule_post"> <label style="display: inline-block;margin: 15px;"><?php _e( 'Schedule this post', 'wp-to-fb-post' );?></label> <input type="text" name="schedule_date" id="datepicker" placeholder="Enter date to be scheduled your post" autocomplete="off" style="display: none;">
 			
 			<input type="hidden" name="the_post_id" value="<?php echo get_the_ID(); ?>" />
-			<input type="submit" class="submite_btn" name="fbtopagepost" value="<?php _e('Post To Facebook',$text_domain)?>" />
+			<input type="submit" class="submite_btn" name="fbtopagepost" value="<?php _e('POST',$text_domain)?>" />
 			</fieldset>
 			</div>
 		</form>
